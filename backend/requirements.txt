@@ -1,24 +1,24 @@
 # --- Web framework / server ---
 fastapi==0.115.6
 uvicorn[standard]==0.32.1
-python-multipart==0.0.20        # required for FastAPI Form(...)/File(...) uploads
+python-multipart==0.0.20  # required for FastAPI Form(...)/File(...) uploads
 
 # --- Config / secrets ---
 python-dotenv==1.0.1
 
 # --- AI providers (ai_client.py) ---
-google-genai==0.8.0              # `from google import genai`
-groq==0.13.0                     # `from groq import Groq`
+google-genai==0.8.0  # from google import genai
+groq==0.13.0  # from groq import Groq
 
 # --- Images (image_tools.py) ---
 Pillow==11.0.0
-rembg==2.0.61                    # pulls in onnxruntime automatically
+rembg==2.0.61  # pulls in onnxruntime automatically
 
 # --- PDF handling (pdf_extract.py, pdf_tools.py, pdf_ocr.py) ---
-PyMuPDF==1.24.14                 # `import fitz`
-python-docx==1.1.2               # `from docx import Document`
-pytesseract==0.3.13              # `import pytesseract` (needs system Tesseract binary, see notes)
+PyMuPDF==1.24.14  # import fitz
+python-docx==1.1.2  # from docx import Document
+pytesseract==0.3.13  # import pytesseract (needs system Tesseract binary)
 
 # --- RAG / embeddings (rag_engine.py) ---
 numpy==1.26.4
-sentence-transformers==3.3.1     # pulls in torch + transformers automatically
+sentence-transformers==3.3.1  # pulls in torch + transformers automatically

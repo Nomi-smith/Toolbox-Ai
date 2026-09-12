@@ -1,5 +1,6 @@
 import json
 import uuid
+import os
 
 from fastapi import (
     FastAPI,
@@ -53,12 +54,19 @@ app = FastAPI(
 # CORS
 # ============================================================
 
+frontend_url = os.getenv("FRONTEND_URL", "").strip()
+
+allowed_origins = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
+
+if frontend_url:
+    allowed_origins.append(frontend_url)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-    ],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
