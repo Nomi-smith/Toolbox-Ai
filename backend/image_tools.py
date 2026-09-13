@@ -4,7 +4,7 @@ from PIL import Image
 from rembg import remove
 
 
-MAX_PROCESS_SIZE = 1600
+MAX_PROCESS_SIZE = 2048
 
 
 def remove_background(image_bytes: bytes) -> bytes:
