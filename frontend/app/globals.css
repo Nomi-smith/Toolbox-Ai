@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
+  --background: #f7f7f5;
   --foreground: #171717;
 }
 
@@ -12,15 +12,175 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+html { scroll-behavior: smooth; }
 
 body {
+  margin: 0;
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  transition: background-color 380ms ease, color 380ms ease;
+}
+
+.app-header {
+  transition: background-color 380ms ease, border-color 380ms ease, box-shadow 380ms ease;
+}
+
+.app-header::after {
+  content: "";
+  display: block;
+  height: 1px;
+  transform-origin: center;
+  background: transparent;
+  transition: background 380ms ease, opacity 380ms ease;
+}
+
+body[data-active-tool="pdf-toolbox"] { background: #f3f7fb; }
+body[data-active-tool="image-toolbox"], body[data-active-tool="background"] { background: #f3f8f5; }
+body[data-active-tool="cv-career"] { background: #f3f7fb; }
+body[data-active-tool="auto"] { background: #f6f4fa; }
+
+body[data-active-tool="pdf-toolbox"] .app-header::after { background: linear-gradient(90deg, transparent, #9eb8d2, transparent); }
+body[data-active-tool="image-toolbox"] .app-header::after, body[data-active-tool="background"] .app-header::after { background: linear-gradient(90deg, transparent, #a5c9b5, transparent); }
+body[data-active-tool="cv-career"] .app-header::after { background: linear-gradient(90deg, transparent, #a9c3df, transparent); }
+body[data-active-tool="auto"] .app-header::after { background: linear-gradient(90deg, transparent, #c3afd8, transparent); }
+
+.page-shell { animation: page-enter 420ms cubic-bezier(.22,1,.36,1) both; }
+.workspace-page { isolation: isolate; }
+.hero-subtext { animation: hero-subtext-in 720ms cubic-bezier(.22,1,.36,1) 120ms both; }
+.ai-spinner { animation: ai-spin 800ms linear infinite; }
+
+/* ---------------------------------------------------------
+   Toolbox identity — each workspace gets its own visual language
+   --------------------------------------------------------- */
+.toolbox-hero-icon {
+  position: relative;
+  display: flex;
+  width: 74px;
+  height: 74px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 24px;
+  border: 1px solid transparent;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, .09);
+  transition: transform 260ms ease, box-shadow 260ms ease;
+}
+
+.toolbox-hero-icon:hover {
+  transform: translateY(-2px) rotate(-1deg);
+  box-shadow: 0 20px 42px rgba(15, 23, 42, .12);
+}
+
+.toolbox-hero-icon-pdf { color: #245b87; background: linear-gradient(145deg, #e5f0fa, #cfe1f0); border-color: #bdd3e5; }
+.toolbox-hero-icon-image { color: #28694c; background: linear-gradient(145deg, #e4f3ea, #cde5d7); border-color: #bdd9c8; }
+.toolbox-hero-icon-cv { color: #345f8e; background: linear-gradient(145deg, #e5eef8, #d3e1f1); border-color: #c0d2e6; }
+.toolbox-hero-icon-copilot { color: #684a82; background: linear-gradient(145deg, #eee7f4, #ddd0e9); border-color: #d4c2e0; }
+
+.toolbox-kicker {
+  margin-top: 16px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .2em;
+}
+.toolbox-kicker-pdf { color: #46769c; }
+.toolbox-kicker-image { color: #438264; }
+.toolbox-kicker-cv { color: #4773a2; }
+.toolbox-kicker-copilot { color: #76558f; }
+
+/* Card identity changes by workspace. Still restrained, but no longer monochrome. */
+.tool-card {
+  overflow: hidden;
+  transform-origin: center bottom;
+  transition: transform 300ms ease, border-color 300ms ease, box-shadow 300ms ease, background 300ms ease;
+}
+
+body[data-active-tool="pdf-toolbox"] .tool-card {
+  background: linear-gradient(145deg, #ffffff 0%, #f8fbfe 100%) !important;
+  border-color: #d7e3ee !important;
+  box-shadow: 0 5px 18px rgba(45, 83, 112, .045);
+}
+body[data-active-tool="pdf-toolbox"] .tool-card:hover {
+  border-color: #a9c3d9 !important;
+  box-shadow: 0 20px 52px rgba(45, 83, 112, .11);
+}
+body[data-active-tool="pdf-toolbox"] .tool-card > div:first-of-type {
+  background: #e9f2f9 !important;
+  color: #245b87 !important;
+}
+
+body[data-active-tool="image-toolbox"] .tool-card {
+  background: linear-gradient(145deg, #ffffff 0%, #f7fbf8 100%) !important;
+  border-color: #d7e7dc !important;
+  box-shadow: 0 5px 18px rgba(44, 105, 76, .045);
+}
+body[data-active-tool="image-toolbox"] .tool-card:hover {
+  border-color: #afd0bc !important;
+  box-shadow: 0 20px 52px rgba(44, 105, 76, .11);
+}
+body[data-active-tool="image-toolbox"] .tool-card > div:first-of-type {
+  background: #e8f4ec !important;
+  color: #28694c !important;
+}
+
+body[data-active-tool="cv-career"] .tool-card {
+  background: linear-gradient(145deg, #ffffff 0%, #f7faff 100%) !important;
+  border-color: #d8e3f0 !important;
+}
+body[data-active-tool="auto"] .tool-card {
+  background: linear-gradient(145deg, #ffffff 0%, #faf7fc 100%) !important;
+  border-color: #e4d9eb !important;
+}
+
+.tool-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(circle at 100% 0%, rgba(67, 112, 148, .08), transparent 36%);
+  transition: opacity 300ms ease;
+}
+body[data-active-tool="image-toolbox"] .tool-card::before { background: radial-gradient(circle at 100% 0%, rgba(48, 132, 83, .09), transparent 36%); }
+body[data-active-tool="cv-career"] .tool-card::before { background: radial-gradient(circle at 100% 0%, rgba(42, 105, 168, .08), transparent 36%); }
+body[data-active-tool="auto"] .tool-card::before { background: radial-gradient(circle at 100% 0%, rgba(120, 77, 150, .08), transparent 36%); }
+.tool-card:hover::before { opacity: 1; }
+
+.tool-card-badge { transition: transform 220ms ease, box-shadow 220ms ease; }
+body[data-active-tool="pdf-toolbox"] .tool-card-badge { background: #315f82 !important; }
+body[data-active-tool="image-toolbox"] .tool-card-badge { background: #337356 !important; }
+body[data-active-tool="cv-career"] .tool-card-badge { background: #38648f !important; }
+body[data-active-tool="auto"] .tool-card-badge { background: #6b4e7e !important; }
+.tool-card:hover .tool-card-badge { transform: translateY(-1px); box-shadow: 0 5px 14px rgba(0,0,0,.12); }
+
+/* PDF cards are intentionally a little more editorial than the other toolboxes. */
+body[data-active-tool="pdf-toolbox"] .tool-card:nth-child(1) { border-radius: 30px 18px 18px 18px; }
+body[data-active-tool="pdf-toolbox"] .tool-card:nth-child(2) { border-radius: 18px 30px 18px 18px; }
+body[data-active-tool="pdf-toolbox"] .tool-card:nth-child(3) { border-radius: 18px 18px 30px 18px; }
+body[data-active-tool="pdf-toolbox"] .tool-card:nth-child(4) { border-radius: 18px 18px 18px 30px; }
+body[data-active-tool="pdf-toolbox"] .tool-card:nth-child(5), body[data-active-tool="pdf-toolbox"] .tool-card:nth-child(6) { border-radius: 24px; }
+
+.workspace-back { backdrop-filter: blur(12px); }
+
+@keyframes page-enter {
+  from { opacity: 0; transform: translateY(10px) scale(.997); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes hero-subtext-in {
+  from { opacity: 0; transform: translateX(-28px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes ai-spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 640px) {
+  .workspace-back { padding-left: 9px; padding-right: 9px; }
+  .workspace-back .back-label { display: none; }
+  .toolbox-hero-icon { width: 64px; height: 64px; border-radius: 21px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  body, .app-header, .tool-card, .tool-card-badge, .toolbox-hero-icon { transition: none !important; }
+  .page-shell, .hero-subtext, .ai-spinner { animation: none !important; }
 }

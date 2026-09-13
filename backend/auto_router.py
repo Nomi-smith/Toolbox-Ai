@@ -9,6 +9,8 @@ ALLOWED_TOOLS = {
     "pdf_to_word": "Convert a PDF document into an editable Word document.",
     "pdf_extract_text": "Extract text from a PDF document.",
     "pdf_ask": "Answer a question about the contents of a PDF.",
+    "image_analyze": "Understand an uploaded image and answer questions about what is visible in it.",
+    "image_to_pdf": "Convert an uploaded image into a PDF document.",
 }
 
 
@@ -26,6 +28,35 @@ def route_request(
     Gemini is tried first, with Groq automatically
     used as a fallback if Gemini hits a quota/rate limit.
     """
+
+    # Deterministic rules for simple non-AI operations.
+    # These intentionally run before the LLM so simple conversions never
+    # consume an AI request or get routed to an AI-only tool.
+    request_lower = (request or "").lower()
+    filename_lower = (filename or "").lower()
+
+    image_to_pdf_patterns = [
+        r"\bimage\s*(?:to|into|as)\s*pdf\b",
+        r"\bconvert\s+(?:an?\s+)?image\s+(?:to|into)\s+(?:a\s+)?pdf\b",
+        r"\bmake\s+(?:an?\s+)?image\s+(?:a\s+)?pdf\b",
+        r"\bturn\s+(?:an?\s+)?image\s+(?:into|to)\s+(?:a\s+)?pdf\b",
+        r"\bsave\s+(?:this\s+)?image\s+as\s+pdf\b",
+    ]
+
+    if any(re.search(pattern, request_lower) for pattern in image_to_pdf_patterns):
+        has_image_file = bool(
+            re.search(
+                r"\.(?:png|jpe?g|webp|bmp|tiff?|heic|heif)(?:\b|$)",
+                filename_lower,
+            )
+        )
+        if has_image_file:
+            return {
+                "tool": "image_to_pdf",
+                "reason": "Convert the uploaded image into a PDF without using AI.",
+                "confidence": 1.0,
+            }
+
 
     tools_description = "\n".join(
         f"- {name}: {description}"
@@ -68,13 +99,20 @@ Rules:
 6. If the user wants a background removed from an image,
    choose remove_background.
 
-7. Consider both the user's request and uploaded file type.
+7. If the user asks what an image is about, wants it described,
+   wants visible objects/text explained, or asks a question about
+   image contents, choose image_analyze.
 
-8. Return ONLY valid JSON.
+8. Treat spelling mistakes, missing punctuation, shorthand, and
+   casual phrasing as normal. Infer the user's intended request.
 
-9. Do not include markdown.
+9. Consider both the user's request and uploaded file type.
 
-10. The JSON must have exactly these fields:
+10. Return ONLY valid JSON.
+
+11. Do not include markdown.
+
+12. The JSON must have exactly these fields:
 
 {{
   "tool": "one of the available tool names",

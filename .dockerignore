@@ -1,0 +1,17 @@
+.git
+.github
+.vscode
+
+.env
+.env.*
+!.env.example
+
+frontend/node_modules
+frontend/.next
+
+backend/.venv
+backend/venv
+backend/__pycache__
+
+*.pyc
+*.log
